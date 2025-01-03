@@ -165,7 +165,7 @@
                 </div>
             </header>
             <!-- About Section-->
-            <section class="bg-light py-5">
+            <section class="bg-light py-5" id="tentang">
                 <div class="container px-5">
                     <div class="row gx-5 justify-content-center">
                         <div class="col-xxl-8">

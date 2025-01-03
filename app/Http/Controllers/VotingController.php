@@ -32,26 +32,44 @@ class VotingController extends Controller
         ], 200);
     }
 
-    public function UserVote(Request $req){
-        $user = User::where("token",explode(" ", $req->header("Authorization"))[1])->first();
-        $voting = Voting::select(["voting_name", "candidate", "description", "voting_start", "voting_end"])->get();
-        
-        $filter =  Voting::select(["data.candidate"])->where("data.user_id", $user->id)->get();
-        $count= 0;
-        foreach($filter as $ft){
-            $voting[$count]["data"] = [
-                "candidate" => $filter[$count]->data[0]["candidate"],
-                "voteCount" => count($ft->data)
-            ];
-            $count++;
-        };
+    public function UserVote(Request $req)
+{
+    $token = explode(" ", $req->header("Authorization"))[1];
+    $user = User::where("token", $token)->first();
 
+    if (!$user) {
         return response()->json([
-            "status" => 200,
-            "message" =>  $user ? "Berhasil mengambil data voting!" : "Gagal mengambil data votingan !",
-            "data" => $user ? $voting : NULL
-        ], 200);
+            "status" => 400,
+            "message" => "Gagal mengambil data votingan!",
+            "data" => null
+        ], 400);
     }
+
+    // Ambil semua data voting
+    $votings = Voting::all();
+
+    // Proses setiap voting
+    $result = $votings->map(function ($voting) use ($user) {
+        $userVote = collect($voting->data)->firstWhere('user_id', $user->id);
+
+        $voteData = [
+            "voteCount" => $voting->data ? count($voting->data) : 0,
+            "candidate" => $userVote['candidate'] ?? null,
+        ];
+
+        return array_merge($voting->only(['voting_name', 'candidate', 'description', 'voting_start', 'voting_end']), [
+            "id" => (string)$voting->_id,
+            "data" => $voteData,
+        ]);
+    });
+
+    return response()->json([
+        "status" => 200,
+        "message" => "Berhasil mengambil data voting!",
+        "data" => $result
+    ], 200);
+}
+
 
     public function store(Request $req){
         try{

@@ -37,6 +37,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $primaryKey = '_id'; // Primary key menggunakan _id
+
+    protected $casts = [
+        '_id' => 'string', // Pastikan _id dikembalikan sebagai string
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

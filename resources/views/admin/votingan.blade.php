@@ -109,6 +109,44 @@
     </div>
   </div>
 
+<div class="modal fade" id="hasilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Hasil Voting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="display : grid; grid-template-columns: 30% 50% 20% ;">
+            <form action=""  >
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-body mb-3">
+                      <h5 class="card-title">Total Suara : </h5>
+                      <p class="card-text" id="totalSuara">-</p>
+                    </div>
+                </div>
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-body mb-3">
+                      <h5 class="card-title">Total Kandidat : </h5>
+                      <p class="card-text" id="totalKandidat">-</p>
+                    </div>
+                </div>
+            </form>
+
+            <div>
+                <canvas id="hasilChart"></canvas>
+            </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onClick="updateData()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div>
     <table id="voteTable" class="table">
         <thead>
@@ -119,6 +157,7 @@
             <th>Tgl.Deskripsi</th>
             <th>Kandidat</th>
             <th>Aksi</th>
+            <th>Hasil</th>
         </thead>
         <tbody>
 
@@ -127,6 +166,7 @@
 </div>
 <script src="{{asset('js/jquery-3.7.1.js')}}"></script>
 <script src="js/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
 <script>
     let voteData = [];
@@ -137,6 +177,74 @@
         $("#updateEnd")[0].value = voteData[id].voting_end;
         $("#updateDesc")[0].value = voteData[id].description;
         $("#updateId")[0].value = voteData[id].id;
+    }
+
+    let chart = null;
+    function setHasil(id){
+        $("#totalSuara")[0].innerHTML = voteData[id].data.length;
+        $("#totalKandidat")[0].innerHTML = voteData[id].candidate.length;
+        
+        let can = new Array(voteData[id].candidate.length).fill(0); // Inisialisasi array dengan panjang kandidat
+        let labels = [];
+        
+        // Siapkan label dan hitung suara per kandidat
+        voteData[id].candidate.forEach((e, index) => {
+            labels.push(e.name); // Tambahkan nama kandidat ke label
+            can[index] = 0; // Pastikan nilai awal 0
+        });
+        
+        voteData[id].data.forEach((d) => {
+            if (d.candidate < can.length) {
+                can[d.candidate] += 1; // Tambahkan suara untuk kandidat terkait
+            }
+        });
+        
+        console.log(can);
+        
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Data Votingan',
+                data: can,
+                backgroundColor: [
+                    'rgba(255, 99, 132)',
+                    'rgba(255, 159, 64)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgb(153, 102, 255)',
+                    'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        
+        if (chart != null) chart.destroy();
+        
+        chart = new Chart($("#hasilChart")[0], {
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: Math.max(...can) + 3 // Tambahkan sedikit margin
+                    }
+                }
+            },
+        });
+        
+   
     }
     
     function fetchData(){
@@ -159,7 +267,9 @@
                             `
                                 <button  data-toggle="modal" data-target="#updateModal" class="btn btn-primary" onClick="setData(${idx})">Edit</button>
                                 <button class="btn btn-danger" onClick="deleteData('${e.id}')">Hapus</button>
-                            `
+                            `,
+                            `<button  data-toggle="modal" data-target="#hasilModal" class="btn btn-primary" onClick="setHasil(${idx})">Lihat</button>`
+
                         ]);
                     });
                     if(table!=null)table.destroy();
@@ -173,6 +283,7 @@
                             {title : 'end'},
                             {title : 'desc'},
                             {title : 'count'},
+                            {title : 'hasil'},
                         ],
                         statSave : true,
                         'bDestroy' : true

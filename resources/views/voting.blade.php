@@ -71,6 +71,8 @@
 </html>
 
 <script>
+    let voteData = null;
+
     function fetchData(){
         
         $.ajaxSetup({
@@ -82,8 +84,10 @@
         $.ajax({
             url : "{{$apiRoute}}/user/voting?status=active",
             success : (res)=>{
+                voteData = res.data;
                 $('#voteList')[0].innerHTML = "";
                 res.data.forEach((d, idx)=>{
+                    console.log( d.data? (d.data.candidate != null ? "disabled" : ""):"");
                     let candView = "";
                     d.candidate.forEach((cand, idx)=>{
                         candView += 
@@ -108,7 +112,7 @@
                                             <p>Waktu berakhir : ${new Date(d.voting_end).toLocaleString()}</p>
                                             <p>Total Suara Terkumpul : ${d.data ? d.data.voteCount ?? 0 : 0}</p>
                                             <br>
-                                            <button class="btn btn-primary" onClick="voting('form${idx}')">Vote Sekarang</button>
+                                            <button class="btn btn-primary" onClick="voting('form${idx}')" ${d.data? (d.data.candidate != null ? "disabled" : ""):""}>${d.data? (d.data.candidate != null ? "Anda sudah vote" : "Vote"):"Vote"}</button>
                                         </div>
 
                                         <div>
@@ -135,36 +139,58 @@
 
 
     function voting(id){
-
-        $.ajaxSetup({
-            headers : {
-                'Authorization' : "Bearer " + window.localStorage.getItem("api-key") ,
-                'Content-Type' : 'application/json'
-            }
-        });
         var object = {};
         new FormData($(`#`+id)[0]).forEach((value, key) => object[key] = value);
-        var json = JSON.stringify(object);
-        
-        $.ajax({
-            url : "{{$apiRoute}}/voting",
-            method : "PATCH",
-            data : json,
-            success : (res)=>{
-                Swal.fire({
-                    icon : res.status == 200 ? "success" : "error",
-                    text  : res.message,
-                    title : res.status == 200 ? "Berhasil" : "Gagal",
-                });
+        Swal.fire({
+            title: `Lakukan voting untuk kandidat ke-${parseInt(object.candidate)+1} ?`,
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Ya',
+            denyButtonText: 'Tidak',
+            customClass: {
+              actions: 'my-actions',
+              cancelButton: 'order-1 right-gap',
+              confirmButton: 'order-2',
+              denyButton: 'order-3',
             },
-            error : (err)=>{
-                Swal.fire({
-                    icon :  "error",
-                    text  : err.responseJSON.message,
-                    title : "Error",
+          }).then((result) => {
+            if (result.isConfirmed) {
+                var json = JSON.stringify(object);
+
+                $.ajaxSetup({
+                    headers : {
+                        'Authorization' : "Bearer " + window.localStorage.getItem("api-key") ,
+                        'Content-Type' : 'application/json'
+                    }
                 });
+                
+                $.ajax({
+                    url : "{{$apiRoute}}/voting",
+                    method : "PATCH",
+                    data : json,
+                    success : (res)=>{
+                        Swal.fire({
+                            icon : res.status == 200 ? "success" : "error",
+                            text  : res.message,
+                            title : res.status == 200 ? "Berhasil" : "Gagal",
+                        });
+
+                        fetchData();
+                    },
+                    error : (err)=>{
+                        Swal.fire({
+                            icon :  "error",
+                            text  : err.responseJSON.message,
+                            title : "Error",
+                        });
+                    }
+                });
+
+            } else if (result.isDenied) {
+              Swal.fire('Aksi dibatalkan', '', 'info')
             }
-        });
+          })
+        
     }
 
     fetchData();

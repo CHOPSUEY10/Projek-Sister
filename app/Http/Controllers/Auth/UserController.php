@@ -58,7 +58,9 @@ class UserController extends Controller
             if(Auth::attempt($req->only('username', 'password'))){
                 Auth::guard(Auth::user()->role??"user" == "admin" ? "admin" : "web")->attempt($req->only('username', 'password'));
                 $token = $req->user()->createToken("api-token")->plainTextToken;
-                User::where("username", $req->username)->update(["token" => $token]);
+                $user = User::where("username", $req->username)->update(["token" => $token]);
+                Auth::user()->role = $user->role ?? "user";
+                
                 return response()->json([
                     "status" => 200,
                     "message" => "Berhasil login !",
