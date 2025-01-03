@@ -91,15 +91,15 @@
 
 
 
-                    await Swal.fire({
+                    let conf = await Swal.fire({
                         title : res.status == 200 ? "Sukses" : "Error",
                         icon : res.status == 200 ? "success" : "error",
                         text : res.message
                     });
 
-                    if(res.status == 200 ){
+                    if(res.status == 200 && conf){
                       window.localStorage.setItem("api-key", res.data.token);
-                      window.location.href = "/";
+                      window.location.href = (res.data.user.role??"user") == "admin"? "/admin":"/";
                     }
                 },
                 error : (err)=>{

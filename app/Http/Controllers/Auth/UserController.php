@@ -24,19 +24,19 @@ class UserController extends Controller
 
             $data = $req->validate([
                 "username" => 'required',
-                "username" => 'required',
-                "username" => 'required',
+                "password" => 'required',
             ]);
         
 
             return response()->json([
-                "status" => 201,
+                "status" => 200,
                 "message" => "Berhasil menambahkan data pengguna!",
                 "data" => User::create([
                     "username" => $req->username,
                     "password" => Hash::make($req->password),
-                    "email" => $req->email
-                ], 201)
+                    "email" => $req->email ?? $req->username."@gmail.com",
+                    "role" => "user"
+                ], 200)
             ]);
 
         }catch(ValidationException $e){
@@ -56,6 +56,7 @@ class UserController extends Controller
             ]);
 
             if(Auth::attempt($req->only('username', 'password'))){
+                Auth::guard(Auth::user()->role??"user" == "admin" ? "admin" : "web")->attempt($req->only('username', 'password'));
                 $token = $req->user()->createToken("api-token")->plainTextToken;
                 User::where("username", $req->username)->update(["token" => $token]);
                 return response()->json([
@@ -64,7 +65,6 @@ class UserController extends Controller
                     "data" => [
                         "token" => $token,
                         "user" => Auth::user(),
-                        "loggedin" => Auth::check()
                     ]
                 ], 200 );
                
@@ -83,6 +83,53 @@ class UserController extends Controller
                 "message" => "Username atau password kosong !",
                 "data" => NULL
             ], 400 );
+        }
+    }
+
+    public function update(Request $req){
+        try{
+            $updateData = [];
+
+            $req->validate([
+                "id" => 'required',
+            ]);
+
+            if($req->username != NULL && $req->username != "") $updateData["username"] = $req->username;
+            if($req->password != NULL && $req->password != "") $updateData["password"] = $req->password;
+            if($req->email != NULL && $req->email != "") $updateData["email"] = $req->email;
+
+            return response()->json([
+                "status" => 200,
+                "message" => "Berhasil mengupdate data user !",
+                "data" => User::where("id", $req->id)->update($updateData)
+            ], 200);
+
+        }catch(ValidationException $e){
+            return response()->json([
+                "status" => 400,
+                "message" => "Id tidak ditemukan !"
+            ], 400);
+        }
+    }
+
+    public function destroy(Request $req){
+        try{
+
+            $req->validate([
+                "id" => 'required',
+            ]);
+
+            return response()->json([
+                "status" => 200,
+                "message" => "Berhasil menghapus data voting !",
+                "data" => User::where('id', $req->id)->delete()
+            ], 200);
+
+        }catch(ValidationException $e){
+            return response()->json([
+                "status" => 400,
+                "message" => "Id tidak ditemukan !"
+            ], 400);
         }
     }
 

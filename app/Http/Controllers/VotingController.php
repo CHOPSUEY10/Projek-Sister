@@ -28,7 +28,7 @@ class VotingController extends Controller
         return response()->json([
             "status" => 200,
             "message" => "Berhasil mengambil data voting!",
-            "data" => Voting::select(["voting_name", "description", "voting_start", "voting_end"])->get()
+            "data" => Voting::all()
         ], 200);
     }
 

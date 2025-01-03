@@ -68,21 +68,11 @@
 
             <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
+                <a class="nav-link collapsed" href="/admin?page=user" >
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Pengguna</span>
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
-                        <a class="collapse-item" href="utilities-border.html">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a>
-                    </div>
-                </div>
+               
             </li>
 
             <!-- Divider -->
@@ -354,6 +344,8 @@
                     <!-- Begin Page Content -->
                     @if(isset($_GET['page']) && $_GET['page']=="votingan")
                         @include('admin.votingan')
+                    @elseif(isset($_GET['page']) && $_GET['page']=="user")
+                        @include('admin.user')
                     @else 
                         @include('admin.dashboard')
                     @endif
@@ -414,10 +406,7 @@
     <script src="js/sb-admin-2.min.js"></script>
     <script src="js/datatables.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-
+  
     <script src="js/sweetalert2@11.js"></script>
 
 </body>

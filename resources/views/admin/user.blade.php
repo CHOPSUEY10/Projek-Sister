@@ -17,33 +17,20 @@
         <div class="modal-body">
             <form action="" id="addForm" >
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Nama Voting</label>
-                    <input name="voting_name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Masukkan nama voting">
-                </div>
-
-                <div style="display:  grid; grid-template-columns: repeat(2, calc(50% - 1rem)); column-gap:1rem;">
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Nama Voting</label>
-                        <input name="voting_start" type="datetime-local" class="form-control" id="exampleFormControlInput1" placeholder="Tanggal Mulai">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Nama Voting</label>
-                        <input name="voting_end" type="datetime-local" class="form-control" id="exampleFormControlInput1" placeholder="Tanggal Selesai">
-                    </div>
+                    <label for="exampleFormControlInput1" class="form-label">Username</label>
+                    <input name="username" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Masukkan username">
                 </div>
 
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Deskrpsi</label>
-                    <input name="description" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Masukkan deskripsi voting">
+                    <label for="exampleFormControlInput1" class="form-label">Password</label>
+                    <input name="password" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Masukkan password">
                 </div>
 
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Masukkan kandidat</label>
-                    <input name="candidate[][name]" type="text" class="form-control mb-2"  placeholder="Masukkan nama kandidat">
-                    <input name="candidate[][name]" type="text" class="form-control mb-2"  placeholder="Masukkan nama kandidat">
-
+                    <label for="exampleFormControlInput1" class="form-label">Email (opsional)</label>
+                    <input name="email" type="text" class="form-control mb-2"  placeholder="Masukkan email">
                 </div>
+
             </form>
           
         </div>
@@ -56,8 +43,7 @@
   </div>
 
   
-<!-- Modal -->
-<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -71,32 +57,18 @@
                 <input type="text" id="updateId" name="id" hidden>
 
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Nama Voting</label>
-                    <input name="voting_name" type="text" class="form-control" id="updateName" placeholder="Masukkan nama voting">
-                </div>
-
-                <div style="display:  grid; grid-template-columns: repeat(2, calc(50% - 1rem)); column-gap:1rem;">
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Mulai Voting</label>
-                        <input name="voting_start" type="datetime-local" class="form-control" id="updateStart" placeholder="Tanggal Mulai">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Voting Selesai</label>
-                        <input name="voting_end" type="datetime-local" class="form-control" id="updateEnd" placeholder="Tanggal Selesai">
-                    </div>
+                    <label for="exampleFormControlInput1" class="form-label">Username</label>
+                    <input name="username" type="text" class="form-control" id="updateUsername" placeholder="Masukkan username">
                 </div>
 
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Deskrpsi</label>
-                    <input name="description" type="text" class="form-control" id="updateDesc" placeholder="Masukkan deskripsi voting">
+                    <label for="exampleFormControlInput1" class="form-label">Password</label>
+                    <input name="password" type="text" class="form-control" id="updatePass" placeholder="Masukkan password">
                 </div>
 
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Masukkan kandidat</label>
-                    <input name="candidate[][name]" type="text" class="form-control mb-2"  placeholder="updateCan1" disabled>
-                    <input name="candidate[][name]" type="text" class="form-control mb-2"  placeholder="updateCan2" disabled>
-
+                    <label for="exampleFormControlInput1" class="form-label">Email</label>
+                    <input name="email" type="text" class="form-control" id="updateMail" placeholder="Masukkan email">
                 </div>
             </form>
           
@@ -110,15 +82,15 @@
   </div>
 
 <div>
-    <table id="voteTable" class="table">
+    <table id="userTable" class="table">
         <thead>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Tgl.Mulai</th>
-            <th>Tgl.Selesai</th>
-            <th>Tgl.Deskripsi</th>
-            <th>Kandidat</th>
-            <th>Aksi</th>
+            <tr>
+                <td>ID</th>
+                <td>Username</th>
+                <td>Email</th>
+                <td>Role</th>
+                <td>Aksi</th>
+            </tr>
         </thead>
         <tbody>
 
@@ -129,33 +101,36 @@
 <script src="js/datatables.min.js"></script>
 
 <script>
-    let voteData = [];
+    let userData = [];
     let table = null;
+
     function setData(id){
-        $("#updateName")[0].value = voteData[id].voting_name;
-        $("#updateStart")[0].value = voteData[id].voting_start;
-        $("#updateEnd")[0].value = voteData[id].voting_end;
-        $("#updateDesc")[0].value = voteData[id].description;
-        $("#updateId")[0].value = voteData[id].id;
+        $("#updateUsername")[0].value = userData[id].username;
+        $("#updateMail")[0].value = userData[id].email;
+        $("#updateId")[0].value = userData[id].id;
     }
     
     function fetchData(){
+        $.ajaxSetup({
+            headers : {
+                'Authorization' : "Bearer " + window.localStorage.getItem('api-key')
+            }
+        });
+
         $.ajax({
-            url : "{{$apiRoute}}/voting",
+            url : "{{$apiRoute}}/user",
             method : "GET",
             success : (res)=>{
                 console.log(res);
                 if(res.status == 200){
                     let data = [];
-                    voteData = res.data;
+                    userData = res.data;
                     res.data.forEach((e, idx)=>{
                         data.push([
-                            idx+1,
-                            e.voting_name,
-                            e.voting_start,
-                            e.voting_end,
-                            e.description,
-                            e.candidate.length,
+                            e.id,
+                            e.username,
+                            e.email,
+                            e.role ?? "-",
                             `
                                 <button  data-toggle="modal" data-target="#updateModal" class="btn btn-primary" onClick="setData(${idx})">Edit</button>
                                 <button class="btn btn-danger" onClick="deleteData('${e.id}')">Hapus</button>
@@ -163,18 +138,16 @@
                         ]);
                     });
                     if(table!=null)table.destroy();
-
-                    table = new DataTable( "#voteTable",{
+                    table = new DataTable("#userTable",{
                         data : data,
                         column : [
-                            {title : 'no'},
-                            {title : 'name'},
-                            {title : 'start'},
-                            {title : 'end'},
-                            {title : 'desc'},
-                            {title : 'count'},
+                            {title : 'id'},
+                            {title : 'username'},
+                            {title : 'email'},
+                            {title : 'role'},
+                            {title : 'action'},
                         ],
-                        statSave : true,
+                        saveStat : true,
                         'bDestroy' : true
                     });
 
@@ -221,7 +194,7 @@
                 });
 
                 $.ajax({
-                    url : '{{$apiRoute}}/voting',
+                    url : '{{$apiRoute}}/user',
                     method : "DELETE",
                     data : {
                         id : id
@@ -261,7 +234,7 @@
         });
 
         $.ajax({
-            url : "{{$apiRoute}}/voting",
+            url : "{{$apiRoute}}/user",
             method : "POST",
             data : new FormData($("#addForm")[0]),
             cache : false,
@@ -295,13 +268,12 @@
         });
 
         $.ajax({
-            url : "{{$apiRoute}}/voting",
+            url : "{{$apiRoute}}/user",
             method : "PUT",
             data : {
-                voting_name : $("#updateName")[0].value,
-                voting_start : $("#updateStart")[0].value ,
-                voting_end : $("#updateEnd")[0].value ,
-                description : $("#updateDesc")[0].value,
+                username : $("#updateUsername")[0].value,
+                password : $("#updatePass")[0].value ,
+                email : $("#updateMail")[0].value ,
                 id : $("#updateId")[0].value,
             },
   
