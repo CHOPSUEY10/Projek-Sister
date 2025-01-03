@@ -17,10 +17,12 @@ class AdminController extends Controller
         if(Auth::user()->role == NULL || Auth::user()->role != "admin"){
             return redirect("/");
         }
+        $to = date('Y-m-d H:m:s');
 
         $stat = [
             "totalVotingan" => Voting::count(),
-
+            "votinganEnd" => Voting::where('voting_end', '<', $to)->count(),
+            "votinganLive" => Voting::where('voting_end', '>=', $to)->count()
         ];
 
         $username = Auth::user()->username;

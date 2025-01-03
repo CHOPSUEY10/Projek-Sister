@@ -35,7 +35,7 @@ class UserController extends Controller
                     "username" => $req->username,
                     "password" => Hash::make($req->password),
                     "email" => $req->email ?? $req->username."@gmail.com",
-                    "role" => "user"
+                    "role" => $req->role ?? "user"
                 ], 200)
             ]);
 
@@ -97,6 +97,7 @@ class UserController extends Controller
             if($req->username != NULL && $req->username != "") $updateData["username"] = $req->username;
             if($req->password != NULL && $req->password != "") $updateData["password"] = $req->password;
             if($req->email != NULL && $req->email != "") $updateData["email"] = $req->email;
+            if($req->role != NULL && $req->role != "") $updateData["role"] = $req->role;
 
             return response()->json([
                 "status" => 200,

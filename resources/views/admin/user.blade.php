@@ -27,6 +27,14 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Role</label>
+                    <select name="role" type="text" class="form-control" placeholder="Masukkan password">
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">Email (opsional)</label>
                     <input name="email" type="text" class="form-control mb-2"  placeholder="Masukkan email">
                 </div>
@@ -64,6 +72,14 @@
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">Password</label>
                     <input name="password" type="text" class="form-control" id="updatePass" placeholder="Masukkan password">
+                </div>
+
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Role</label>
+                    <select name="password" type="text" class="form-control" id="updateRole" placeholder="Masukkan password">
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                    </select>
                 </div>
 
                 <div class="mb-3">
@@ -107,6 +123,7 @@
     function setData(id){
         $("#updateUsername")[0].value = userData[id].username;
         $("#updateMail")[0].value = userData[id].email;
+        $("#updateRole")[0].value = userData[id].role;
         $("#updateId")[0].value = userData[id].id;
     }
     
@@ -274,6 +291,7 @@
                 username : $("#updateUsername")[0].value,
                 password : $("#updatePass")[0].value ,
                 email : $("#updateMail")[0].value ,
+                role : $("#updateRole")[0].value ,
                 id : $("#updateId")[0].value,
             },
   
