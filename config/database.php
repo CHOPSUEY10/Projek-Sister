@@ -32,7 +32,7 @@ return [
     'connections' => [
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('DB_URI', "mongodb+srv://".env("MONGO_USER", "admin").":".env("MONGO_PASS", "")."@mydb.rvfulzg.mongodb.net/?retryWrites=true&w=majority&appName=myDB'<"),
+            'dsn' => env('DB_URI', "mongodb+srv://".env("MONGO_USER", "admin").":".env("MONGO_PASS", "")."@cluster0.fu0pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"),
             'database' => env("DB_DATABASE", "sei_enam")
         ],
         'sqlite' => [
